@@ -16,16 +16,19 @@ export async function POST(req: Request) {
     });
     if (!post) return new Response("Post not found", { status: 400 });
     //@ts-ignore
-    const newLikedUsers = JSON.parse(post.likedUsers) || [];
-    if (newLikedUsers.includes(decoded.id))
-      return new Response("Post already liked", { status: 400 });
+    if (!post.likedUsers.find((user) => user.id === decoded.id))
+      return new Response("Post not liked", { status: 400 });
     const newPost = await prisma.post.update({
       where: {
         id: postId,
       },
       data: {
         likes: post.likes + 1,
-        likedUsers: JSON.stringify([...newLikedUsers, decoded.id]),
+        likedUsers: {
+          disconnect: {
+            id: decoded.id,
+          },
+        },
       },
     });
     return Response.json(newPost);

@@ -41,14 +41,16 @@ export async function POST(req: Request) {
     if (!token || !(await jwt.verify(token, "secret")))
       return new Response("Unauthorized", { status: 401 });
     if (!text || isEmpty([text]))
-      return new Response("No text", { status: 400 });
+      return new Response("Please fill text field", { status: 400 });
+    const decoded = (await jwt.decode(token)) as jwt.JwtPayload;
+    const username = decoded.username as string;
     const post = await prisma.post.create({
       data: {
         text: text,
         title: title ? title : "",
         author: {
           connect: {
-            username: "XXXXX",
+            username,
           },
         },
         likes: 0,

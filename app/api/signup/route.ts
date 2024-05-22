@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       },
     });
 
-    const token = jwt.sign({ id: user.id, username }, "secret");
+    const token = jwt.sign({ id: newUser.id, username }, "secret");
     return Response.json(token);
   } catch (error: any) {
     return new Response(error.message, { status: 500 });

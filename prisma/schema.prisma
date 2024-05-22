@@ -9,12 +9,24 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 model User {
   id Int @id @default(autoincrement())
   username String @unique
   password String
+  createdAt DateTime @default(now())
+  posts Post[]
+  likedPosts Post[] @relation(name: "likes")
+}
+model Post {
+  id Int @id @default(autoincrement())
+  author User @relation(fields: [authorId], references: [id])
+  authorId Int
+  title String?
+  text String
+  likes Int
+  likedUsers User[] @relation(name: "likes")
   createdAt DateTime @default(now())
 }
